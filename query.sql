@@ -1,0 +1,1 @@
+SELECT * FROM epa_air_quality;
