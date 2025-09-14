@@ -63,3 +63,35 @@ DELIMITER ','
 CSV HEADER;
 
 INSERT INTO epa_test.epa_air_quality VALUES ('2020-08-01', 60070008, 29, 20);
+
+-- Clustering
+
+CREATE TABLE epa_test.epa_air_quality_clustered
+(
+	date DATE DEFAULT CURRENT_DATE,
+	site_id INTEGER CHECK (site_id > 0),
+	daily_mean_pm10_concentration REAL NOT NULL,
+	daily_aqi_value REAL NOT NULL
+);
+-- 26ms
+
+COPY epa_test.epa_air_quality_clustered
+FROM '/Users/brandonminer/usf/relational_databases/data/epa_air_quality.csv'
+DELIMITER ','
+CSV HEADER;
+-- 16ms
+
+CREATE INDEX epa_air_quality_btree
+ON epa_test.epa_air_quality_clustered 
+USING btree (site_id);
+-- 8ms
+
+CLUSTER epa_test.epa_air_quality_clustered USING epa_air_quality_btree;
+--15ms
+
+INSERT INTO epa_test.epa_air_quality_clustered VALUES ('2020-08-01', 60070008, 29, 20);
+-- 4ms
+
+-- Clustering index on a table --
+
+

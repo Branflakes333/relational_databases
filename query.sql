@@ -26,3 +26,30 @@ HAVING COUNT(*) > 30;
 SELECT  employee_id, first_name, last_name, title.title
 FROM employees.employee
 JOIN employees.title ON employees.employee.id = employees.title.employee_id;
+
+-- Performance Comparison Queries
+-- 1. Scan
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_no_index;
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_clustered;
+-- The same sequential scan
+
+-- 2. Search with Equality Selection
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_no_index WHERE site_id = 60070008;
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_clustered WHERE site_id = 60070008;
+-- Here, the index scan is used for the indexed table
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_primary_index WHERE site_id = 60070008;
+-- Used Sequential Scan again because index is on primary key (date, site_id)
+
+-- 3. Search with Range Selection
+EXPLAIN ANALYZE SELECT * FROM epa_test.epa_air_quality_primary_index WHERE site_id = 60070008 AND date = '2020-08-01';
+-- Used Index Scan because the index is on primary key (date, site_id)
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_no_index WHERE daily_mean_pm10_concentration > 50 AND daily_mean_pm10_concentration < 100;
+EXPLAIN SELECT * FROM epa_test.epa_air_quality_clustered WHERE daily_mean_pm10_concentration > 50 AND daily_mean_pm10_concentration < 100;
+
+-- 4. Insert a new record
+EXPLAIN INSERT INTO epa_test.epa_air_quality_no_index VALUES ('2020-08-01', 60070008, 29, 20);
+EXPLAIN INSERT INTO epa_test.epa_air_quality_clustered VALUES ('2020-08-01', 60070008, 29, 20);
+
+-- 5. Delete a record
+EXPLAIN DELETE FROM epa_test.epa_air_quality_no_index WHERE site_id = 60070008 AND date = '2020-08-01';
+EXPLAIN DELETE FROM epa_test.epa_air_quality_clustered WHERE site_id = 60070008 AND date = '2020-08-01';
