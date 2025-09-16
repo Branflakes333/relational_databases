@@ -53,3 +53,18 @@ EXPLAIN INSERT INTO epa_test.epa_air_quality_clustered VALUES ('2020-08-01', 600
 -- 5. Delete a record
 EXPLAIN DELETE FROM epa_test.epa_air_quality_no_index WHERE site_id = 60070008 AND date = '2020-08-01';
 EXPLAIN DELETE FROM epa_test.epa_air_quality_clustered WHERE site_id = 60070008 AND date = '2020-08-01';
+
+
+-- Practice
+SELECT * FROM courses WHERE credits > 3;
+
+SELECT instructor_id, COUNT(course_id) AS course_count
+FROM universitydb.courses
+GROUP BY instructor_id
+
+
+SELECT i.first_name, i.last_name, COUNT(DISTINCT e.student_id) AS num_students
+FROM universitydb.courses AS c JOIN universitydb.instructors AS i
+ON c.instructor_id = i.instructor_id
+JOIN universitydb.enrollments AS e ON e.course_id = c.course_id
+GROUP BY i.instructor_id 
