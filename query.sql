@@ -68,3 +68,10 @@ FROM universitydb.courses AS c JOIN universitydb.instructors AS i
 ON c.instructor_id = i.instructor_id
 JOIN universitydb.enrollments AS e ON e.course_id = c.course_id
 GROUP BY i.instructor_id 
+
+
+CREATE VIEW bad_air_view AS
+SELECT esl.site_name, esl.site_id
+FROM public.epa_site_location AS esl LEFT JOIN public.epa_air_quality AS eaq
+ON esl.site_id = eaq.site_id
+WHERE eaq.daily_mean_pm10_concentration > 35.5 OR eaq.daily_aqi_value > 101;
